@@ -288,11 +288,132 @@ st.markdown("""
             transform: none !important;
         }
 
-        .suggestion-label {
-            font-size: 0.8rem;
-            color: #8b949e;
+        .sample-prompt-btn {
             margin-top: 6px;
             margin-bottom: 4px;
+        }
+        .sample-prompt-btn button {
+            background: #161b22 !important;
+            border: 1px solid #30363d !important;
+            color: #8b949e !important;
+            font-weight: 500 !important;
+            font-size: 0.72rem !important;
+            line-height: 1.2 !important;
+            padding: 6px 8px !important;
+            border-radius: 20px !important;
+            box-shadow: none !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            width: auto !important;
+            min-height: 0 !important;
+        }
+        .sample-prompt-btn button:hover {
+            border-color: #388bfd !important;
+            color: #58a6ff !important;
+            transform: none !important;
+            box-shadow: 0 0 10px rgba(56,139,253,0.2) !important;
+        }
+
+        /* ---------- Explainer + Demo Walkthrough sections ---------- */
+
+        .page-heading {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f0f6fc;
+            margin: 34px 0 14px 0;
+            letter-spacing: 0.2px;
+        }
+        .page-heading .accent { color: #58a6ff; }
+
+        .explain-card {
+            background: linear-gradient(135deg, #12181f 0%, #0d1117 100%);
+            border: 1px solid #30363d;
+            border-left: 3px solid #388bfd;
+            border-radius: 12px;
+            padding: 22px 22px 18px 22px;
+            height: 100%;
+        }
+        .explain-card .explain-icon {
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+        .explain-card h4 {
+            margin: 0 0 10px 0;
+            color: #f0f6fc;
+            font-size: 1.08rem;
+            letter-spacing: 0.2px;
+        }
+        .explain-card p {
+            color: #8b949e;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            margin: 0 0 12px 0;
+        }
+        .explain-card .explain-flow {
+            font-size: 0.75rem;
+            color: #58a6ff;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            padding-top: 10px;
+            border-top: 1px dashed #30363d;
+        }
+
+        .demo-card {
+            background: #12181f;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 10px;
+        }
+        .demo-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #79c0ff;
+            background: rgba(56,139,253,0.1);
+            border: 1px solid rgba(56,139,253,0.3);
+            border-radius: 20px;
+            padding: 3px 12px;
+            margin-bottom: 14px;
+        }
+        .demo-step {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .demo-step .step-num {
+            background: #1f6feb;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.78rem;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .demo-step .step-body {
+            color: #c9d1d9;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding-top: 2px;
+        }
+        .demo-step .step-body b { color: #f0f6fc; }
+
+        .live-app-banner {
+            background: rgba(56,139,253,0.06);
+            border: 1px solid rgba(56,139,253,0.25);
+            border-radius: 10px;
+            padding: 12px 18px;
+            color: #79c0ff;
+            font-size: 0.85rem;
+            margin-bottom: 22px;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -321,6 +442,7 @@ if 'last_query' not in st.session_state:
     st.session_state['last_query'] = ""
 if 'search_input' not in st.session_state:
     st.session_state['search_input'] = ""
+
 
 # ============================================================
 # Helper utilities (additive only — no existing logic touched)
@@ -407,243 +529,354 @@ SAMPLE_PROMPTS = [
     "Feature adoption below 40%",
 ]
 
-# Main Control Layout Grid split 50/50
-col1, col2 = st.columns([1, 1], gap="large")
+# ============================================================
+# SECTION 1 — How SynapKeep AI Works (brief explainer cards)
+# ============================================================
+st.markdown('<div class="page-heading">🧭 How <span class="accent">SynapKeep AI</span> Works</div>', unsafe_allow_html=True)
 
-with col1:
-    st.markdown("### 🔍 Intelligent Data Synthesis Channel")
+explain_col1, explain_col2 = st.columns(2, gap="large")
 
-    search_prompt = st.text_input(
-        "Query account states naturally:",
-        placeholder="e.g., Show me high risk accounts with over 3 tickets",
-        key="search_input"
+with explain_col1:
+    st.markdown(
+        """
+        <div class="explain-card">
+            <div class="explain-icon">🔍</div>
+            <h4>Intelligent Data Synthesis Channel</h4>
+            <p>
+                Ask a business question in plain English. Gemini 2.5 Flash reads your
+                natural language request against a schema-aware prompt and translates
+                it into a validated SQL statement, which is then executed against the
+                SQLite customer telemetry database to surface the exact accounts you're
+                asking about — no analyst or SQL knowledge required.
+            </p>
+            <div class="explain-flow">Business Question → Gemini 2.5 Flash → SQL → SQLite → Customer Telemetry</div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    # Sample Prompt Chips — quick-fill helpers below the search box
-    st.markdown('<div class="sample-prompt-btn">', unsafe_allow_html=True)
-    sample_cols = st.columns(len(SAMPLE_PROMPTS))
-    for i, (scol, prompt_text) in enumerate(zip(sample_cols, SAMPLE_PROMPTS)):
-        with scol:
-            if st.button(prompt_text, key=f"sample_prompt_{i}"):
-                st.session_state["search_input"] = prompt_text
-                st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+with explain_col2:
+    st.markdown(
+        """
+        <div class="explain-card">
+            <div class="explain-icon">⚡</div>
+            <h4>Autonomous Intervention Strategy Engine</h4>
+            <p>
+                Once accounts are surfaced, isolate any single customer to see an
+                instant health read-out — badge, score, and risk factors — then trigger
+                Gemini to synthesize a personalized retention playbook: executive
+                summary, retention strategy, tailored outreach copy, and recovery
+                recommendations, ready to act on immediately.
+            </p>
+            <div class="explain-flow">Selected Account → Risk Analysis → Gemini 2.5 Flash → Retention Playbook</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-    # Process when query changes or runs
-    if search_prompt and search_prompt != st.session_state['last_query']:
-        with st.status("🧠 Understanding business question...", expanded=False) as status:
-            try:
-                status.update(label="🧠 Understanding business question...")
-                time.sleep(0.3)
+st.markdown("<br>", unsafe_allow_html=True)
 
-                status.update(label="⚙ Generating SQL...")
-                compiled_sql = ai.generate_sql(search_prompt)
+# ============================================================
+# SECTION 2 — Demo Walkthrough (illustrative, from the README)
+# ============================================================
+st.markdown('<div class="page-heading">🧪 Demo <span class="accent">Walkthrough</span></div>', unsafe_allow_html=True)
 
-                status.update(label="📊 Executing analytics...")
-                extracted_metrics = db.execute_query(compiled_sql)
+st.markdown('<div class="demo-card">', unsafe_allow_html=True)
+st.markdown('<span class="demo-tag">Example Scenario</span>', unsafe_allow_html=True)
 
-                status.update(label="🤖 Building customer insights...")
-                time.sleep(0.3)
+st.markdown(
+    """
+    <div class="demo-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+            An executive asks: <b>"Show me companies with over 3 support tickets opened."</b>
+        </div>
+    </div>
+    <div class="demo-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+            Gemini translates the request into a schema-aware SQL query:
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-                status.update(label="✨ Preparing executive dashboard...")
-                time.sleep(0.2)
+st.code("SELECT *\nFROM customer_health\nWHERE support_tickets_opened > 3;", language="sql")
 
-                # Commit strictly into the State Machine
-                st.session_state['flagged_accounts'] = extracted_metrics.to_dict('records')
-                st.session_state['last_query'] = search_prompt
-                st.session_state['compiled_sql'] = compiled_sql
+st.markdown(
+    """
+    <div class="demo-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+            The generated SQL is validated and executed against the SQLite database.
+        </div>
+    </div>
+    <div class="demo-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+            Matching customer telemetry — MRR, inactivity, tickets, adoption — is displayed instantly.
+        </div>
+    </div>
+    <div class="demo-step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+            Clicking <b>🚀 Synthesize Personalized Recovery Playbook</b> has Gemini generate an
+            executive summary, retention strategy, personalized outreach, and recovery recommendations.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown('</div>', unsafe_allow_html=True)
 
-                # Clear old playbook context upon fresh navigation entry
-                if 'cached_playbook' in st.session_state:
-                    del st.session_state['cached_playbook']
+st.markdown("<br>", unsafe_allow_html=True)
 
-                status.update(label="Analysis Complete", state="complete")
+# ============================================================
+# SECTION 3 — Live Application (stacked, not side-by-side)
+# ============================================================
+st.markdown('<div class="page-heading">🚀 Live <span class="accent">Application</span></div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="live-app-banner">Try it yourself below — ask a real question, then isolate an account to generate its retention playbook.</div>',
+    unsafe_allow_html=True
+)
 
-            except Exception as runtime_err:
-                status.update(label="Execution pipeline fault", state="error")
-                st.error(f"Execution pipeline fault: {runtime_err}")
+# ---- Intelligent Data Synthesis Channel (full width) ----
+st.markdown("### 🔍 Intelligent Data Synthesis Channel")
 
-    # Persist layout outputs between structural updates
-    if st.session_state['flagged_accounts']:
-        accounts = st.session_state['flagged_accounts']
-        record_count = len(accounts)
+search_prompt = st.text_input(
+    "Query account states naturally:",
+    placeholder="e.g., Show me high risk accounts with over 3 tickets",
+    key="search_input"
+)
 
-        # ---- Executive Summary Card ----
-        high_priority = sum(1 for r in accounts if derive_health_score(r) < 40)
-        total_mrr = sum(
-            v for v in (
-                _first_present(r, ["monthly_spend_usd", "mrr", "monthly_recurring_revenue"])
-                for r in accounts
-            ) if isinstance(v, (int, float))
-        )
-        if high_priority > 0:
-            ai_rec = "Immediate Customer Success intervention recommended."
-        elif record_count > 0:
-            ai_rec = "Proactive monitoring recommended for the returned accounts."
-        else:
-            ai_rec = "No action required at this time."
+# Sample Prompt Chips — quick-fill helpers below the search box
+st.markdown('<div class="sample-prompt-btn">', unsafe_allow_html=True)
+sample_cols = st.columns(len(SAMPLE_PROMPTS))
+for i, (scol, prompt_text) in enumerate(zip(sample_cols, SAMPLE_PROMPTS)):
+    with scol:
+        if st.button(prompt_text, key=f"sample_prompt_{i}"):
+            st.session_state["search_input"] = prompt_text
+            st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown(
-            f"""
-            <div class="exec-summary-card">
-                <h4>📋 Executive Summary</h4>
-                <ul>
-                    <li>Customers returned: {record_count}</li>
-                    <li>High Priority Accounts: {high_priority}</li>
-                    <li>Estimated Monthly Revenue Represented: {format_currency(total_mrr)}</li>
-                </ul>
-                <div class="ai-rec">🤖 AI Recommendation: {ai_rec}</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+# Process when query changes or runs
+if search_prompt and search_prompt != st.session_state['last_query']:
+    with st.status("🧠 Understanding business question...", expanded=False) as status:
+        try:
+            status.update(label="🧠 Understanding business question...")
+            time.sleep(0.3)
 
-        # ---- Business Impact Card ----
-        priority_label = "High" if high_priority > 0 else ("Medium" if record_count > 0 else "Low")
-        priority_class = {"High": "priority-high", "Medium": "priority-medium", "Low": "priority-low"}[priority_label]
-        sla_label = "Within 24 Hours" if priority_label == "High" else ("Within 3 Days" if priority_label == "Medium" else "Routine")
+            status.update(label="⚙ Generating SQL...")
+            compiled_sql = ai.generate_sql(search_prompt)
 
-        st.markdown(
-            f"""
-            <div class="impact-grid">
-                <div class="impact-cell">
-                    <div class="impact-lbl">Revenue At Risk</div>
-                    <div class="impact-val">{format_currency(total_mrr)}</div>
-                </div>
-                <div class="impact-cell {priority_class}">
-                    <div class="impact-lbl">Priority</div>
-                    <div class="impact-val">{priority_label}</div>
-                </div>
-                <div class="impact-cell">
-                    <div class="impact-lbl">Suggested SLA</div>
-                    <div class="impact-val">{sla_label}</div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+            status.update(label="📊 Executing analytics...")
+            extracted_metrics = db.execute_query(compiled_sql)
 
-        st.markdown("##### 🛠️ Live Synthesized Pipeline Statement")
-        st.code(st.session_state.get('compiled_sql', ''), language="sql")
+            status.update(label="🤖 Building customer insights...")
+            time.sleep(0.3)
 
-        st.markdown("##### 📊 Database Output Dataset")
-        st.markdown(
-            f'<div class="result-count-strip"><b>{record_count}</b> matching customers found.</div>',
-            unsafe_allow_html=True
-        )
+            status.update(label="✨ Preparing executive dashboard...")
+            time.sleep(0.2)
 
-        df_display = pd.DataFrame(accounts)
-        st.dataframe(df_display, use_container_width=True, hide_index=True)
+            # Commit strictly into the State Machine
+            st.session_state['flagged_accounts'] = extracted_metrics.to_dict('records')
+            st.session_state['last_query'] = search_prompt
+            st.session_state['compiled_sql'] = compiled_sql
 
-        st.download_button(
-            label="⬇ Export Results (CSV)",
-            data=df_display.to_csv(index=False).encode("utf-8"),
-            file_name="synapkeep_query_results.csv",
-            mime="text/csv",
-            key="csv_export_btn"
-        )
-
-        st.markdown(
-            f'<div class="success-banner">✅ <b>Analysis Complete</b> — {record_count} customers analyzed successfully.</div>',
-            unsafe_allow_html=True
-        )
-
-    elif search_prompt:
-        # Visual feedback showing that the entry WAS processed, but returned zero entries
-        st.markdown("##### 🛠️ Live Synthesized Pipeline Statement")
-        st.code(st.session_state.get('compiled_sql', 'SELECT * FROM customer_health WHERE ...'), language="sql")
-        st.warning("⚠️ Query executed successfully, but no risk accounts matched these parameters in the warehouse.")
-    else:
-        st.markdown(
-            """
-            <div class="empty-state">
-                <h4>Ready for Executive Analysis</h4>
-                <div>Enter a natural language business question to begin customer intelligence analysis.</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        
-with col2:
-    st.markdown("### ⚡ Autonomous Intervention Strategy Engine")
-
-    active_list = st.session_state['flagged_accounts']
-    if active_list:
-        # Safe string formatting fallback to completely protect against missing columns/KeyErrors
-        selector_map = []
-        for i, row in enumerate(active_list):
-            name = row.get('company_name', 'Unknown Company')
-            spend = row.get('monthly_spend_usd', None)
-
-            # Format spend cleanly to match currency expectations (e.g., $4,500 instead of 4500.0)
-            spend_str = f"${int(spend):,}" if isinstance(spend, (int, float)) else "N/A"
-            selector_map.append(f"{i} | {name} ({spend_str}/mo)")
-
-        # Track the active selected company via session state to clear old playbooks on change
-        current_selection = st.selectbox("Isolate an account to deploy mitigation strategies:", selector_map)
-        target_index = int(current_selection.split(" | ")[0])
-        selected_account = active_list[target_index]
-
-        # Session state guard: If the user changes the dropdown company, wipe out the old playbook!
-        if 'last_selected_index' not in st.session_state:
-            st.session_state['last_selected_index'] = target_index
-
-        if st.session_state['last_selected_index'] != target_index:
-            st.session_state['last_selected_index'] = target_index
+            # Clear old playbook context upon fresh navigation entry
             if 'cached_playbook' in st.session_state:
                 del st.session_state['cached_playbook']
-                st.rerun()
 
-        # ---- Customer Health Badge + Progress Bar ----
-        health_score = derive_health_score(selected_account)
-        badge_text, badge_class, badge_color = health_badge(health_score)
+            status.update(label="Analysis Complete", state="complete")
 
-        st.markdown(f'<span class="badge {badge_class}">{badge_text}</span>', unsafe_allow_html=True)
+        except Exception as runtime_err:
+            status.update(label="Execution pipeline fault", state="error")
+            st.error(f"Execution pipeline fault: {runtime_err}")
+
+# Persist layout outputs between structural updates
+if st.session_state['flagged_accounts']:
+    accounts = st.session_state['flagged_accounts']
+    record_count = len(accounts)
+
+    # ---- Executive Summary Card ----
+    high_priority = sum(1 for r in accounts if derive_health_score(r) < 40)
+    total_mrr = sum(
+        v for v in (
+            _first_present(r, ["monthly_spend_usd", "mrr", "monthly_recurring_revenue"])
+            for r in accounts
+        ) if isinstance(v, (int, float))
+    )
+    if high_priority > 0:
+        ai_rec = "Immediate Customer Success intervention recommended."
+    elif record_count > 0:
+        ai_rec = "Proactive monitoring recommended for the returned accounts."
+    else:
+        ai_rec = "No action required at this time."
+
+    st.markdown(
+        f"""
+        <div class="exec-summary-card">
+            <h4>📋 Executive Summary</h4>
+            <ul>
+                <li>Customers returned: {record_count}</li>
+                <li>High Priority Accounts: {high_priority}</li>
+                <li>Estimated Monthly Revenue Represented: {format_currency(total_mrr)}</li>
+            </ul>
+            <div class="ai-rec">🤖 AI Recommendation: {ai_rec}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # ---- Business Impact Card ----
+    priority_label = "High" if high_priority > 0 else ("Medium" if record_count > 0 else "Low")
+    priority_class = {"High": "priority-high", "Medium": "priority-medium", "Low": "priority-low"}[priority_label]
+    sla_label = "Within 24 Hours" if priority_label == "High" else ("Within 3 Days" if priority_label == "Medium" else "Routine")
+
+    st.markdown(
+        f"""
+        <div class="impact-grid">
+            <div class="impact-cell">
+                <div class="impact-lbl">Revenue At Risk</div>
+                <div class="impact-val">{format_currency(total_mrr)}</div>
+            </div>
+            <div class="impact-cell {priority_class}">
+                <div class="impact-lbl">Priority</div>
+                <div class="impact-val">{priority_label}</div>
+            </div>
+            <div class="impact-cell">
+                <div class="impact-lbl">Suggested SLA</div>
+                <div class="impact-val">{sla_label}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown("##### 🛠️ Live Synthesized Pipeline Statement")
+    st.code(st.session_state.get('compiled_sql', ''), language="sql")
+
+    st.markdown("##### 📊 Database Output Dataset")
+    st.markdown(
+        f'<div class="result-count-strip"><b>{record_count}</b> matching customers found.</div>',
+        unsafe_allow_html=True
+    )
+
+    df_display = pd.DataFrame(accounts)
+    st.dataframe(df_display, use_container_width=True, hide_index=True)
+
+    st.download_button(
+        label="⬇ Export Results (CSV)",
+        data=df_display.to_csv(index=False).encode("utf-8"),
+        file_name="synapkeep_query_results.csv",
+        mime="text/csv",
+        key="csv_export_btn"
+    )
+
+    st.markdown(
+        f'<div class="success-banner">✅ <b>Analysis Complete</b> — {record_count} customers analyzed successfully.</div>',
+        unsafe_allow_html=True
+    )
+
+elif search_prompt:
+    # Visual feedback showing that the entry WAS processed, but returned zero entries
+    st.markdown("##### 🛠️ Live Synthesized Pipeline Statement")
+    st.code(st.session_state.get('compiled_sql', 'SELECT * FROM customer_health WHERE ...'), language="sql")
+    st.warning("⚠️ Query executed successfully, but no risk accounts matched these parameters in the warehouse.")
+else:
+    st.markdown(
+        """
+        <div class="empty-state">
+            <h4>Ready for Executive Analysis</h4>
+            <div>Enter a natural language business question to begin customer intelligence analysis.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# ---- Autonomous Intervention Strategy Engine (full width, below) ----
+st.markdown("### ⚡ Autonomous Intervention Strategy Engine")
+
+active_list = st.session_state['flagged_accounts']
+if active_list:
+    # Safe string formatting fallback to completely protect against missing columns/KeyErrors
+    selector_map = []
+    for i, row in enumerate(active_list):
+        name = row.get('company_name', 'Unknown Company')
+        spend = row.get('monthly_spend_usd', None)
+
+        # Format spend cleanly to match currency expectations (e.g., $4,500 instead of 4500.0)
+        spend_str = f"${int(spend):,}" if isinstance(spend, (int, float)) else "N/A"
+        selector_map.append(f"{i} | {name} ({spend_str}/mo)")
+
+    # Track the active selected company via session state to clear old playbooks on change
+    current_selection = st.selectbox("Isolate an account to deploy mitigation strategies:", selector_map)
+    target_index = int(current_selection.split(" | ")[0])
+    selected_account = active_list[target_index]
+
+    # Session state guard: If the user changes the dropdown company, wipe out the old playbook!
+    if 'last_selected_index' not in st.session_state:
+        st.session_state['last_selected_index'] = target_index
+
+    if st.session_state['last_selected_index'] != target_index:
+        st.session_state['last_selected_index'] = target_index
+        if 'cached_playbook' in st.session_state:
+            del st.session_state['cached_playbook']
+            st.rerun()
+
+    # ---- Customer Health Badge + Progress Bar ----
+    health_score = derive_health_score(selected_account)
+    badge_text, badge_class, badge_color = health_badge(health_score)
+
+    st.markdown(f'<span class="badge {badge_class}">{badge_text}</span>', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div class="health-track">
+            <div class="health-fill" style="width:{health_score}%; background:{badge_color};"></div>
+        </div>
+        <div class="health-score-lbl">Health Score: {int(health_score)} / 100</div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # ---- Risk Factors Panel ----
+    risk_factors = build_risk_factors(selected_account)
+    if risk_factors:
+        risk_items = "".join(f"<li>{factor}</li>" for factor in risk_factors)
         st.markdown(
             f"""
-            <div class="health-track">
-                <div class="health-fill" style="width:{health_score}%; background:{badge_color};"></div>
-            </div>
-            <div class="health-score-lbl">Health Score: {int(health_score)} / 100</div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        # ---- Risk Factors Panel ----
-        risk_factors = build_risk_factors(selected_account)
-        if risk_factors:
-            risk_items = "".join(f"<li>{factor}</li>" for factor in risk_factors)
-            st.markdown(
-                f"""
-                <div class="risk-panel">
-                    <h5>⚠️ Risk Factors</h5>
-                    <ul>{risk_items}</ul>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        st.markdown("<br>", unsafe_allow_html=True)
-
-        # State key bound button execution loop
-        if st.button("🚀 Synthesize Personalized Recovery Playbook", key="generate_btn"):
-            with st.spinner(f"Compiling contextual recovery strategy targeting {selected_account.get('company_name', 'Selected Account')}..."):
-                try:
-                    remedial_assets = ai.generate_retention_playbook(selected_account)
-                    st.session_state['cached_playbook'] = remedial_assets
-                except Exception as e:
-                    st.error(f"Playbook Generation Error: {e}")
-
-        if 'cached_playbook' in st.session_state:
-            st.markdown("#### 📧 Tailored Tactical Outbound Script")
-            st.markdown(f'<div class="playbook-container">{st.session_state["cached_playbook"]}</div>', unsafe_allow_html=True)
-    else:
-        st.markdown(
-            """
-            <div class="empty-state">
-                <h4>Ready for Executive Analysis</h4>
-                <div>Awaiting interactive database analytical data query strings to isolate client cohorts.</div>
+            <div class="risk-panel">
+                <h5>⚠️ Risk Factors</h5>
+                <ul>{risk_items}</ul>
             </div>
             """,
             unsafe_allow_html=True
         )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # State key bound button execution loop
+    if st.button("🚀 Synthesize Personalized Recovery Playbook", key="generate_btn"):
+        with st.spinner(f"Compiling contextual recovery strategy targeting {selected_account.get('company_name', 'Selected Account')}..."):
+            try:
+                remedial_assets = ai.generate_retention_playbook(selected_account)
+                st.session_state['cached_playbook'] = remedial_assets
+            except Exception as e:
+                st.error(f"Playbook Generation Error: {e}")
+
+    if 'cached_playbook' in st.session_state:
+        st.markdown("#### 📧 Tailored Tactical Outbound Script")
+        st.markdown(f'<div class="playbook-container">{st.session_state["cached_playbook"]}</div>', unsafe_allow_html=True)
+else:
+    st.markdown(
+        """
+        <div class="empty-state">
+            <h4>Ready for Executive Analysis</h4>
+            <div>Awaiting interactive database analytical data query strings to isolate client cohorts.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
