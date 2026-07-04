@@ -413,26 +413,27 @@ col1, col2 = st.columns([1, 1], gap="large")
 with col1:
     st.markdown("### 🔍 Intelligent Data Synthesis Channel")
 
-    # Seamlessly merged natural language query interface with inline vector optimization suggestions
+    # Native natural language query text entry
     search_prompt = st.text_input(
-        "Query account states naturally (or select a vector template below):",
-        value=st.session_state["search_input"],
+        "Query account states naturally (or select an optimization template below):",
+        value=st.session_state.get("search_input", ""),
         placeholder="e.g., Show me high risk accounts with over 3 tickets",
         key="search_input_field"
     )
 
-    # Inline optimization vector suggestions mapped elegantly beneath the search bar
+    # Cohesive dropdown menu displaying suggestions from your SAMPLE_PROMPTS configurations
     selected_suggestion = st.selectbox(
-        "Optimization Vector Templates:",
-        ["[Write Native Query]"] + SAMPLE_PROMPTS,
+        "Available Search Vectors:",
+        ["[Type Custom Query Below]"] + SAMPLE_PROMPTS,
         index=0,
-        label_visibility="collapsed", # Keeps the layout clean and tight
+        label_visibility="collapsed",  # Hides the secondary label to maintain a tight layout
         key="suggestion_dropdown"
     )
 
-    # Bind the dropdown choice directly to our query processor variable if a sample is picked
-    if selected_suggestion != "[Write Native Query]":
+    # Sync selection changes straight into the execution prompt variable
+    if selected_suggestion != "[Type Custom Query Below]":
         search_prompt = selected_suggestion
+        st.session_state["search_input"] = selected_suggestion
 
     # Process when query changes or runs
     if search_prompt and search_prompt != st.session_state['last_query']:
@@ -463,11 +464,113 @@ with col1:
                     del st.session_state['cached_playbook']
 
                 status.update(label="Analysis Complete", state="complete")
+                st.rerun()
 
             except Exception as runtime_err:
                 status.update(label="Execution pipeline fault", state="error")
                 st.error(f"Execution pipeline fault: {runtime_err}")
 
+    # Persist layout outputs between structural updates
+    if st.session_state['flagged_accounts']:
+        accounts = st.session_state['flagged_accounts']
+        record_count = len(accounts)
+
+        # ---- Executive Summary Card ----
+        high_priority = sum(1 for r in accounts if derive_health_score(r) < 40)
+        total_mrr = sum(
+            v for v in (
+                _first_present(r, ["monthly_spend_usd", "mrr", "monthly_recurring_revenue"])
+                for r in accounts
+            ) if isinstance(v, (int, float))
+        )
+        if high_priority > 0:
+            ai_rec = "Immediate Customer Success intervention recommended."
+        elif record_count > 0:
+            ai_rec = "Proactive monitoring recommended for the returned accounts."
+        else:
+            ai_rec = "No action required at this time."
+
+        st.markdown(
+            f"""
+            <div class="exec-summary-card">
+                <h4>📋 Executive Summary</h4>
+                <ul>
+                    <li>Customers returned: {record_count}</li>
+                    <li>High Priority Accounts: {high_priority}</li>
+                    <li>Estimated Monthly Revenue Represented: {format_currency(total_mrr)}</li>
+                </ul>
+                <div class="ai-rec">🤖 AI Recommendation: {ai_rec}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # ---- Business Impact Card ----
+        priority_label = "High" if high_priority > 0 else ("Medium" if record_count > 0 else "Low")
+        priority_class = {"High": "priority-high", "Medium": "priority-medium", "Low": "priority-low"}[priority_label]
+        sla_label = "Within 24 Hours" if priority_label == "High" else ("Within 3 Days" if priority_label == "Medium" else "Routine")
+
+        st.markdown(
+            f"""
+            <div class="impact-grid">
+                <div class="impact-cell">
+                    <div class="impact-lbl">Revenue At Risk</div>
+                    <div class="impact-val">{format_currency(total_mrr)}</div>
+                </div>
+                <div class="impact-cell {priority_class}">
+                    <div class="impact-lbl">Priority</div>
+                    <div class="impact-val">{priority_label}</div>
+                </div>
+                <div class="impact-cell">
+                    <div class="impact-lbl">Suggested SLA</div>
+                    <div class="impact-val">{sla_label}</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown("##### 🛠️ Live Synthesized Pipeline Statement")
+        st.code(st.session_state.get('compiled_sql', ''), language="sql")
+
+        st.markdown("##### 📊 Database Output Dataset")
+        st.markdown(
+            f'<div class="result-count-strip"><b>{record_count}</b> matching customers found.</div>',
+            unsafe_allow_html=True
+        )
+
+        df_display = pd.DataFrame(accounts)
+        st.dataframe(df_display, use_container_width=True, hide_index=True)
+
+        st.download_button(
+            label="⬇ Export Results (CSV)",
+            data=df_display.to_csv(index=False).encode("utf-8"),
+            file_name="synapkeep_query_results.csv",
+            mime="text/csv",
+            key="csv_export_btn"
+        )
+
+        st.markdown(
+            f'<div class="success-banner">✅ <b>Analysis Complete</b> — {record_count} customers analyzed successfully.</div>',
+            unsafe_allow_html=True
+        )
+
+    elif search_prompt:
+        # Visual feedback showing that the entry WAS processed, but returned zero entries
+        st.markdown("##### 🛠️ Live Synthesized Pipeline Statement")
+        st.code(st.session_state.get('compiled_sql', 'SELECT * FROM customer_health WHERE ...'), language="sql")
+        st.warning("⚠️ Query executed successfully, but no risk accounts matched these parameters in the warehouse.")
+    else:
+        st.markdown(
+            """
+            <div class="empty-state">
+                <h4>Ready for Executive Analysis</h4>
+                <div>Enter a natural language business question to begin customer intelligence analysis.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
 with col2:
     st.markdown("### ⚡ Autonomous Intervention Strategy Engine")
 
