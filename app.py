@@ -470,12 +470,12 @@ with col1:
                 status.update(label="Execution pipeline fault", state="error")
                 st.error(f"Execution pipeline fault: {runtime_err}")
 
-    # Persist layout outputs between structural updates
+    # Persist layout outputs between structural updates using your custom dashboard components
     if st.session_state['flagged_accounts']:
         accounts = st.session_state['flagged_accounts']
         record_count = len(accounts)
 
-        # ---- Executive Summary Card ----
+        # ---- Executive Summary Card Framework ----
         high_priority = sum(1 for r in accounts if derive_health_score(r) < 40)
         total_mrr = sum(
             v for v in (
@@ -505,7 +505,7 @@ with col1:
             unsafe_allow_html=True
         )
 
-        # ---- Business Impact Card ----
+        # ---- Business Impact Grid System ----
         priority_label = "High" if high_priority > 0 else ("Medium" if record_count > 0 else "Low")
         priority_class = {"High": "priority-high", "Medium": "priority-medium", "Low": "priority-low"}[priority_label]
         sla_label = "Within 24 Hours" if priority_label == "High" else ("Within 3 Days" if priority_label == "Medium" else "Routine")
@@ -570,7 +570,7 @@ with col1:
             """,
             unsafe_allow_html=True
         )
-        
+
 with col2:
     st.markdown("### ⚡ Autonomous Intervention Strategy Engine")
 
