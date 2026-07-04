@@ -413,27 +413,21 @@ col1, col2 = st.columns([1, 1], gap="large")
 with col1:
     st.markdown("### 🔍 Intelligent Data Synthesis Channel")
 
-    # Native natural language query text entry
     search_prompt = st.text_input(
-        "Query account states naturally (or select an optimization template below):",
-        value=st.session_state.get("search_input", ""),
+        "Query account states naturally:",
         placeholder="e.g., Show me high risk accounts with over 3 tickets",
-        key="search_input_field"
+        key="search_input"
     )
 
-    # Cohesive dropdown menu displaying suggestions from your SAMPLE_PROMPTS configurations
-    selected_suggestion = st.selectbox(
-        "Available Search Vectors:",
-        ["[Type Custom Query Below]"] + SAMPLE_PROMPTS,
-        index=0,
-        label_visibility="collapsed",  # Hides the secondary label to maintain a tight layout
-        key="suggestion_dropdown"
-    )
-
-    # Sync selection changes straight into the execution prompt variable
-    if selected_suggestion != "[Type Custom Query Below]":
-        search_prompt = selected_suggestion
-        st.session_state["search_input"] = selected_suggestion
+    # Sample Prompt Chips — quick-fill helpers below the search box
+    st.markdown('<div class="sample-prompt-btn">', unsafe_allow_html=True)
+    sample_cols = st.columns(len(SAMPLE_PROMPTS))
+    for i, (scol, prompt_text) in enumerate(zip(sample_cols, SAMPLE_PROMPTS)):
+        with scol:
+            if st.button(prompt_text, key=f"sample_prompt_{i}"):
+                st.session_state["search_input"] = prompt_text
+                st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Process when query changes or runs
     if search_prompt and search_prompt != st.session_state['last_query']:
@@ -464,18 +458,17 @@ with col1:
                     del st.session_state['cached_playbook']
 
                 status.update(label="Analysis Complete", state="complete")
-                st.rerun()
 
             except Exception as runtime_err:
                 status.update(label="Execution pipeline fault", state="error")
                 st.error(f"Execution pipeline fault: {runtime_err}")
 
-    # Persist layout outputs between structural updates using your custom dashboard components
+    # Persist layout outputs between structural updates
     if st.session_state['flagged_accounts']:
         accounts = st.session_state['flagged_accounts']
         record_count = len(accounts)
 
-        # ---- Executive Summary Card Framework ----
+        # ---- Executive Summary Card ----
         high_priority = sum(1 for r in accounts if derive_health_score(r) < 40)
         total_mrr = sum(
             v for v in (
@@ -505,7 +498,7 @@ with col1:
             unsafe_allow_html=True
         )
 
-        # ---- Business Impact Grid System ----
+        # ---- Business Impact Card ----
         priority_label = "High" if high_priority > 0 else ("Medium" if record_count > 0 else "Low")
         priority_class = {"High": "priority-high", "Medium": "priority-medium", "Low": "priority-low"}[priority_label]
         sla_label = "Within 24 Hours" if priority_label == "High" else ("Within 3 Days" if priority_label == "Medium" else "Routine")
@@ -570,7 +563,7 @@ with col1:
             """,
             unsafe_allow_html=True
         )
-
+        
 with col2:
     st.markdown("### ⚡ Autonomous Intervention Strategy Engine")
 
