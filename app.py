@@ -288,6 +288,13 @@ st.markdown("""
             transform: none !important;
         }
 
+        .suggestion-label {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-top: 6px;
+            margin-bottom: 4px;
+        }
+
         .sample-prompt-btn {
             margin-top: 6px;
             margin-bottom: 4px;
@@ -415,12 +422,175 @@ st.markdown("""
             font-size: 0.85rem;
             margin-bottom: 22px;
         }
+
+        /* ============================================================
+           HERO / LANDING BANNER — glow backdrop, badges, value strip
+           ============================================================ */
+
+        .hero-wrap {
+            position: relative;
+            padding: 38px 34px 30px 34px;
+            margin-bottom: 26px;
+            border-radius: 18px;
+            background:
+                radial-gradient(circle at 12% 20%, rgba(56,139,253,0.18) 0%, transparent 45%),
+                radial-gradient(circle at 88% 15%, rgba(88,166,255,0.14) 0%, transparent 40%),
+                linear-gradient(160deg, #10151c 0%, #0b0f14 100%);
+            border: 1px solid #21262d;
+            overflow: hidden;
+        }
+        .hero-wrap::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(56,139,253,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56,139,253,0.05) 1px, transparent 1px);
+            background-size: 34px 34px;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 75%);
+            pointer-events: none;
+        }
+        .hero-badges {
+            position: relative;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .hero-pill {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(56,139,253,0.1);
+            border: 1px solid rgba(56,139,253,0.3);
+            color: #79c0ff;
+        }
+        .hero-pill.green {
+            background: rgba(63,185,80,0.1);
+            border-color: rgba(63,185,80,0.3);
+            color: #56d364;
+        }
+        .hero-title-wrap { position: relative; }
+
+        .value-strip {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 24px;
+        }
+        .value-chip {
+            background: rgba(13,17,23,0.6);
+            border: 1px solid #21262d;
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+        .value-chip:hover {
+            transform: translateY(-3px);
+            border-color: #388bfd;
+        }
+        .value-chip .value-icon { font-size: 1.15rem; }
+        .value-chip .value-text {
+            font-size: 0.78rem;
+            color: #c9d1d9;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        /* ---------- Subtle 3D depth on interactive cards ---------- */
+        .explain-card,
+        .impact-cell,
+        .exec-summary-card,
+        .risk-panel,
+        .kpi-card {
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+            transform-style: preserve-3d;
+        }
+        .explain-card:hover {
+            transform: translateY(-4px) rotateX(1.5deg);
+            border-color: #388bfd;
+            box-shadow: 0 16px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(56,139,253,0.15);
+        }
+        .impact-cell:hover {
+            transform: translateY(-3px);
+            border-color: #388bfd;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+        }
+        .exec-summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(0,0,0,0.3);
+        }
+        .risk-panel:hover {
+            border-color: #f85149;
+            box-shadow: 0 10px 22px rgba(248,81,73,0.08);
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px) scale(1.015);
+            box-shadow: 0 14px 28px rgba(56,139,253,0.22);
+        }
+
+        /* ---------- Section divider flourish ---------- */
+        .section-flourish {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0 18px 0;
+        }
+        .section-flourish .flourish-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, #30363d, transparent);
+        }
+
+        /* ============================================================
+           RESPONSIVE BREAKPOINTS
+           ============================================================ */
+        @media (max-width: 900px) {
+            .main-title { font-size: 2.2rem; }
+            .value-strip { grid-template-columns: repeat(2, 1fr); }
+            .impact-grid { grid-template-columns: 1fr; }
+            .hero-wrap { padding: 26px 20px 22px 20px; }
+        }
+        @media (max-width: 600px) {
+            .value-strip { grid-template-columns: 1fr; }
+            .main-title { font-size: 1.8rem; }
+            .sub-title { font-size: 0.95rem; }
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# App Navigation Header Banner
-st.markdown('<h1 class="main-title">🧠 SynapKeep AI</h1>', unsafe_allow_html=True)
-st.markdown('<p class="sub-title">Conversational Revenue Protection | Transforming Raw SaaS Telemetry into Instant Customer Salvage Playbooks in 5 Seconds</p>', unsafe_allow_html=True)
+# App Navigation Header Banner — hero landing section (single self-contained HTML block)
+st.markdown(
+    """
+    <div class="hero-wrap">
+        <div class="hero-badges">
+            <span class="hero-pill green">● Live Demo</span>
+            <span class="hero-pill">Gemini 2.5 Flash</span>
+            <span class="hero-pill">Decision Acceleration</span>
+        </div>
+        <div class="hero-title-wrap">
+            <h1 class="main-title">🧠 SynapKeep AI</h1>
+            <p class="sub-title">Conversational Revenue Protection | Transforming Raw SaaS Telemetry into Instant Customer Salvage Playbooks in 5 Seconds</p>
+        </div>
+        <div class="value-strip">
+            <div class="value-chip"><span class="value-icon">🗣️</span><span class="value-text">Natural Language → SQL</span></div>
+            <div class="value-chip"><span class="value-icon">🔒</span><span class="value-text">Schema-Validated Queries</span></div>
+            <div class="value-chip"><span class="value-icon">📊</span><span class="value-text">Instant Customer Telemetry</span></div>
+            <div class="value-chip"><span class="value-icon">🚀</span><span class="value-text">AI Retention Playbooks</span></div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # KPI Micro-Metrics Panel
 kpi1, kpi2, kpi3 = st.columns(3)
@@ -533,6 +703,7 @@ SAMPLE_PROMPTS = [
 # SECTION 1 — How SynapKeep AI Works (brief explainer cards)
 # ============================================================
 st.markdown('<div class="page-heading">🧭 How <span class="accent">SynapKeep AI</span> Works</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-flourish"><div class="flourish-line"></div></div>', unsafe_allow_html=True)
 
 explain_col1, explain_col2 = st.columns(2, gap="large")
 
@@ -580,6 +751,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # SECTION 2 — Demo Walkthrough (illustrative, from the README)
 # ============================================================
 st.markdown('<div class="page-heading">🧪 Demo <span class="accent">Walkthrough</span></div>', unsafe_allow_html=True)
+st.markdown('<div class="section-flourish"><div class="flourish-line"></div></div>', unsafe_allow_html=True)
 
 st.markdown('<div class="demo-card">', unsafe_allow_html=True)
 st.markdown('<span class="demo-tag">Example Scenario</span>', unsafe_allow_html=True)
@@ -636,6 +808,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # SECTION 3 — Live Application (stacked, not side-by-side)
 # ============================================================
 st.markdown('<div class="page-heading">🚀 Live <span class="accent">Application</span></div>', unsafe_allow_html=True)
+st.markdown('<div class="section-flourish"><div class="flourish-line"></div></div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="live-app-banner">Try it yourself below — ask a real question, then isolate an account to generate its retention playbook.</div>',
     unsafe_allow_html=True
@@ -644,20 +817,32 @@ st.markdown(
 # ---- Intelligent Data Synthesis Channel (full width) ----
 st.markdown("### 🔍 Intelligent Data Synthesis Channel")
 
+
+def _apply_sample_prompt(prompt_text):
+    """Callback fires BEFORE the script reruns, so updating the widget's
+    session_state key here is safe — doing it after the widget has already
+    rendered in the same run is what previously caused the red error."""
+    st.session_state["search_input"] = prompt_text
+
+
 search_prompt = st.text_input(
     "Query account states naturally:",
     placeholder="e.g., Show me high risk accounts with over 3 tickets",
     key="search_input"
 )
 
-# Sample Prompt Chips — quick-fill helpers below the search box
+# Sample Prompt Chips — click one to instantly copy it into the search bar above
+st.markdown('<div class="suggestion-label">💡 Try an example — click to fill the search bar:</div>', unsafe_allow_html=True)
 st.markdown('<div class="sample-prompt-btn">', unsafe_allow_html=True)
 sample_cols = st.columns(len(SAMPLE_PROMPTS))
 for i, (scol, prompt_text) in enumerate(zip(sample_cols, SAMPLE_PROMPTS)):
     with scol:
-        if st.button(prompt_text, key=f"sample_prompt_{i}"):
-            st.session_state["search_input"] = prompt_text
-            st.rerun()
+        st.button(
+            prompt_text,
+            key=f"sample_prompt_{i}",
+            on_click=_apply_sample_prompt,
+            args=(prompt_text,)
+        )
 st.markdown('</div>', unsafe_allow_html=True)
 
 # Process when query changes or runs
