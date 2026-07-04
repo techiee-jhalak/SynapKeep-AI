@@ -270,20 +270,6 @@ st.markdown("""
             font-weight: 600;
         }
 
-        .sidebar-flow {
-            font-size: 0.82rem;
-            color: #8b949e;
-            line-height: 2.1;
-        }
-        .sidebar-flow .flow-node {
-            color: #58a6ff;
-            font-weight: 600;
-        }
-        .sidebar-flow .flow-arrow {
-            color: #30363d;
-            text-align: center;
-        }
-
         div[data-testid="stDataFrame"] {
             border: 1px solid #30363d;
             border-radius: 10px;
@@ -302,14 +288,25 @@ st.markdown("""
             transform: none !important;
         }
 
+        .sample-prompt-btn {
+            margin-top: 6px;
+            margin-bottom: 4px;
+        }
         .sample-prompt-btn button {
             background: #161b22 !important;
             border: 1px solid #30363d !important;
             color: #8b949e !important;
             font-weight: 500 !important;
-            font-size: 0.8rem !important;
-            padding: 8px 10px !important;
+            font-size: 0.72rem !important;
+            line-height: 1.2 !important;
+            padding: 6px 8px !important;
+            border-radius: 20px !important;
             box-shadow: none !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            width: auto !important;
+            min-height: 0 !important;
         }
         .sample-prompt-btn button:hover {
             border-color: #388bfd !important;
@@ -319,27 +316,6 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-
-# ============================================================
-# SIDEBAR — AI Workflow Panel
-# ============================================================
-with st.sidebar:
-    st.markdown("#### ⚙ AI Workflow")
-    st.markdown("""
-        <div class="sidebar-flow">
-            <div class="flow-node">Business Question</div>
-            <div class="flow-arrow">↓</div>
-            <div class="flow-node">Gemini</div>
-            <div class="flow-arrow">↓</div>
-            <div class="flow-node">SQL</div>
-            <div class="flow-arrow">↓</div>
-            <div class="flow-node">SQLite</div>
-            <div class="flow-arrow">↓</div>
-            <div class="flow-node">Customer Insights</div>
-            <div class="flow-arrow">↓</div>
-            <div class="flow-node">Retention Playbook</div>
-        </div>
-    """, unsafe_allow_html=True)
 
 # App Navigation Header Banner
 st.markdown('<h1 class="main-title">🧠 SynapKeep AI</h1>', unsafe_allow_html=True)
@@ -458,7 +434,13 @@ col1, col2 = st.columns([1, 1], gap="large")
 with col1:
     st.markdown("### 🔍 Intelligent Data Synthesis Channel")
 
-    # Sample Prompt Buttons — populate the textbox on click
+    search_prompt = st.text_input(
+        "Query account states naturally:",
+        placeholder="e.g., Show me high risk accounts with over 3 tickets",
+        key="search_input"
+    )
+
+    # Sample Prompt Chips — quick-fill helpers below the search box
     st.markdown('<div class="sample-prompt-btn">', unsafe_allow_html=True)
     sample_cols = st.columns(len(SAMPLE_PROMPTS))
     for i, (scol, prompt_text) in enumerate(zip(sample_cols, SAMPLE_PROMPTS)):
@@ -467,12 +449,6 @@ with col1:
                 st.session_state["search_input"] = prompt_text
                 st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-
-    search_prompt = st.text_input(
-        "Query account states naturally:",
-        placeholder="e.g., Show me high risk accounts with over 3 tickets",
-        key="search_input"
-    )
 
     # Process when query changes or runs
     if search_prompt and search_prompt != st.session_state['last_query']:
