@@ -46,7 +46,7 @@ SynapKeep AI demonstrates how Generative AI accelerates executive decision-makin
 
 ---
 
-# ✨ Key Features
+# ✨ Key Features ~
 
 - 🗣️ Natural Language → SQL Translation
 - 🤖 Google Gemini 2.5 Flash Integration
